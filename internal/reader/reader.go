@@ -129,7 +129,7 @@ func FormatConnect(requestId int, cameraId string, token string) []byte {
 		<connectparam>id=%s&amp;connectiontoken=%s</connectparam>
 	</methodcall>`, requestId, cameraId, cameraId, token)
 
-	return append([]byte(message), END)
+	return append([]byte(message), END...)
 }
 
 func FormatLive(requestId int, quality int) []byte {
@@ -138,7 +138,7 @@ func FormatLive(requestId int, quality int) []byte {
 	<methodname>live</methodname>
 	<compressionrate>%d</compressionrate>
 	</methodcall>`, requestId, quality)
-	return append([]byte(message), END)
+	return append([]byte(message), END...)
 }
 
 func FormatConnectUpdate(requestId int, cameraId string, token string) []byte {
@@ -147,7 +147,7 @@ func FormatConnectUpdate(requestId int, cameraId string, token string) []byte {
 			<methodname>connectupdate</methodname>
 			<connectparam>id=%d&amp;connectiontoken=%s</connectparam>
 			</methodcall>`, requestId, cameraId, token)
-	return append([]byte(message), END)
+	return append([]byte(message), END...)
 }
 
 func FormatStop(requestId int) []byte {
@@ -155,7 +155,7 @@ func FormatStop(requestId int) []byte {
 			<methodcall><requestid>%d</requestid>
 			<methodname>stop</methodname>
 			</methodcall>`, requestId)
-	return append([]byte(message), END)
+	return append([]byte(message), END...)
 }
 
 func RecvUntil(conn net.Conn, buf []byte, offset int, size int) (int, error) {
