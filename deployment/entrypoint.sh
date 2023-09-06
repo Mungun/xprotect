@@ -1,0 +1,8 @@
+#!/bin/sh
+PORT=${DEMO_PORT:-':9999'}
+BASE_URL=${DEMO_BASE_URL:-}
+CLIENT_ID=${DEMO_CLIENT_ID:-}
+USER=${DEMO_USER:-}
+PASSWORD=${DEMO_PASSWORD:-}
+
+demo -port $PORT -baseUrl $BASE_URL -clientId $CLIENT_ID -user $USER -password $PASSWORD

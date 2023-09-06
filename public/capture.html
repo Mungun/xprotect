@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<html>
+  <head>    
+    <style>
+      html, document, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      #body {
+        width: 100%;
+        display: flex;
+      }
+
+      .raw_img {
+        width: 50%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .raw_img .top {
+        height: 10vh;
+        padding: 10px;
+      }
+
+      #viewer {
+        width: 100%;
+        height: 100%;
+      }
+
+      .raw_img .middle {
+        height: 40vh;
+        padding: 10px;
+      }
+
+      .raw_img .bottom {
+        padding: 10px;
+        height: 50vh;
+        overflow-y: hidden;
+      }
+
+      #bottom {
+        width: 100%;
+        overflow-y: auto;
+        max-height: 100%;
+      }
+
+      .raw_result {
+        width: 50%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid gray
+      }
+
+      .raw_result .middle {
+        padding: 10px;
+        height: 100vh;
+        overflow-y: hidden;
+      }
+
+      #event {
+        max-height: 100%;
+        width: 100%;
+        overflow-y: auto;
+      }
+      
+    </style>
+  </head>
+<body>  
+  <div id="body">
+      <div class="raw_img">
+        <div class="top">
+          <p> recorder list:
+            <select id="recorder_list">
+              <option value="">select</option>
+            </select>
+          cameraList:
+            <select id="camera_list">
+              <option value="">select</option>
+            </select>
+          
+          <button id="startButton">startButton</button>          
+        </p>
+        </div>
+        <div class="middle">         
+          <object id="viewer" data="/video" alt="Cam streaming"></object>
+        </div>
+        <div class="bottom">
+          <div id="bottom">
+
+          </div>
+        </div>
+      
+      </div>
+      <div class="raw_result" >
+        <div class="middle">
+        <div id="event"></div>
+        </div>
+      </div>    
+  </div>
+
+</body>
+<script>
+  // const domain = 'https://ot-demo.andorean.com'    
+  const domain = ''    
+    const btn = document.getElementById("startButton")
+    btn.addEventListener("click", () => {
+      const serverUrl = document.getElementById("recorder_list").value
+      const cameraId = document.getElementById("camera_list").value
+      if (serverUrl === '') {
+        alert("select recorder")
+        return
+      }
+      if (cameraId === '') {
+        alert("select camera")
+        return
+      }
+      
+      fetch('/api/live', {
+        method: 'post',
+        body: JSON.stringify({cameraId:cameraId, serverUrl: serverUrl})
+      })
+        .then((resp) => resp.json())
+        .then(json => {
+          // alert(JSON.stringify(json))
+          document.getElementById("bottom").innerHTML += `${JSON.stringify(json)}<br/>`
+        }).catch(err => {
+          console.log('error', err)
+          document.getElementById("bottom").innerHTML += `${JSON.stringify(err)}<br/>`
+        })
+      
+    })
+
+    const selRec = document.getElementById("recorder_list")
+
+      fetch('/api/recorder')
+      .then((resp) => resp.json())
+      .then((json) => {
+
+        (json?.list || []).forEach(c => {
+          const opt = document.createElement("option")
+          opt.value = c.webServerUri 
+          opt.label = c.displayName
+          selRec.options.add(opt)
+        });
+    }).catch((err) =>{
+      console.log('error', err)
+      document.getElementById("bottom").innerHTML += `<span>${JSON.stringify(err)}</span><br/>`
+    })
+
+    const selCam = document.getElementById("camera_list")
+
+      fetch('/api/camera')
+      .then((resp) => resp.json())
+      .then((json) => {
+
+        (json?.list || []).forEach(c => {
+          const opt = document.createElement("option")
+          opt.value = c.id 
+          opt.label = c.displayName
+          selCam.options.add(opt)
+        });
+    }).catch((err) =>{
+      console.log('error', err)
+      document.getElementById("bottom").innerHTML += `<span>${JSON.stringify(err)}</span><br/>`
+    })
+
+    
+
+    const source = new EventSource(`${domain}/sse`)
+    source.onmessage = (event) => {
+      try {
+        let msg = JSON.parse(event.data)
+        if (msg.message) { // has result            
+          document.getElementById("event").innerHTML += `${msg.message}<br/>`
+        }
+      
+      } catch (err) {
+        console.error('parse json', err)
+      }
+    }
+
+    source.onerror = (err) => {
+      console.error('sse error', err)
+    }
+  
+
+</script>  
+</html>
