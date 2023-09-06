@@ -23,6 +23,8 @@ const (
 	RESULT_IMAGE         = "IMAGE"
 )
 
+var END = []byte{13, 10, 13, 10}
+
 type StreamCommand struct {
 	Type      string
 	Token     *oauth2.Token
@@ -115,8 +117,8 @@ func (s *ReaderHandler) Start(ctx context.Context, chanCommand chan *StreamComma
 	}
 }
 
-func FormatConnect(requestId int, cameraId string, token string) string {
-	return fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
+func FormatConnect(requestId int, cameraId string, token string) []byte {
+	message := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
 	<methodcall>
 		<requestid>%d</requestid>
 		<methodname>connect</methodname>
@@ -125,30 +127,35 @@ func FormatConnect(requestId int, cameraId string, token string) string {
 		<cameraid>%s</cameraid>
 		<alwaysstdjpeg>yes</alwaysstdjpeg>		
 		<connectparam>id=%s&amp;connectiontoken=%s</connectparam>
-	</methodcall>\r\n\r\n`, requestId, cameraId, cameraId, token)
+	</methodcall>`, requestId, cameraId, cameraId, token)
+
+	return append([]byte(message), END)
 }
 
-func FormatLive(requestId int, quality int) string {
-	return fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
+func FormatLive(requestId int, quality int) []byte {
+	message := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
 	<methodcall><requestid>%d</requestid>
 	<methodname>live</methodname>
 	<compressionrate>%d</compressionrate>
-	</methodcall>\r\n\r\n`, requestId, quality)
+	</methodcall>`, requestId, quality)
+	return append([]byte(message), END)
 }
 
-func FormatConnectUpdate(requestId int, cameraId string, token string) string {
-	return fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
+func FormatConnectUpdate(requestId int, cameraId string, token string) []byte {
+	message := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
 			<methodcall><requestid>%d</requestid>
 			<methodname>connectupdate</methodname>
 			<connectparam>id=%d&amp;connectiontoken=%s</connectparam>
-			</methodcall>\r\n\r\n`, requestId, cameraId, token)
+			</methodcall>`, requestId, cameraId, token)
+	return append([]byte(message), END)
 }
 
-func FormatStop(requestId int) string {
-	return fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
+func FormatStop(requestId int) []byte {
+	message := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
 			<methodcall><requestid>%d</requestid>
 			<methodname>stop</methodname>
-			</methodcall>\r\n\r\n`, requestId)
+			</methodcall>`, requestId)
+	return append([]byte(message), END)
 }
 
 func RecvUntil(conn net.Conn, buf []byte, offset int, size int) (int, error) {
@@ -173,7 +180,7 @@ func RecvUntil(conn net.Conn, buf []byte, offset int, size int) (int, error) {
 			got += bytes
 			miss -= bytes
 		} else {
-			return 0, err
+			return got, err
 		}
 
 	}
@@ -215,7 +222,7 @@ func RecvFixed(conn net.Conn, buf []byte, offset int, size int) (int, error) {
 			got += bytes
 			miss -= bytes
 		} else {
-			return 0, fmt.Errorf("Read error")
+			return got, err
 		}
 
 		ok = got < size
@@ -483,7 +490,7 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 	var requestId = 0
 
 	sendBuffer := FormatConnect(requestId, cameraId, _currentToken.AccessToken)
-	_, err = conn.Write([]byte(sendBuffer))
+	_, err = conn.Write(sendBuffer)
 	if err != nil {
 		klog.Errorf("Write connect message to socket error: %v\n", err)
 		chanResult <- &StreamResult{
@@ -522,7 +529,7 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 	requestId++
 	quality := 75
 	sendBuffer = FormatLive(requestId, quality)
-	_, err = conn.Write([]byte(sendBuffer))
+	_, err = conn.Write(sendBuffer)
 	if err != nil {
 		klog.Errorf("Write stare live message to socket error: %v\n", err)
 		chanResult <- &StreamResult{
@@ -540,14 +547,14 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 			fmt.Printf("Context cancelled\n")
 			requestId++
 			sendBuffer = FormatStop(requestId)
-			conn.Write([]byte(sendBuffer))
+			conn.Write(sendBuffer)
 			return
 		case _t := <-chanToken:
 			fmt.Printf("Token updated :%+v\n", _t.Expiry)
 			_currentToken = _t
 			requestId++
 			sendBuffer = FormatConnectUpdate(requestId, cameraId, _currentToken.AccessToken)
-			_, err = conn.Write([]byte(sendBuffer))
+			_, err = conn.Write(sendBuffer)
 			if err != nil {
 				klog.Errorf("Write token update message to socket error: %v\n", err)
 				chanResult <- &StreamResult{
