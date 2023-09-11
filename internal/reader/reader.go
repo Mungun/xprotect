@@ -119,43 +119,43 @@ func (s *ReaderHandler) Start(ctx context.Context, chanCommand chan *StreamComma
 }
 
 func FormatConnect(requestId int, cameraId string, token string) []byte {
-	message := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
-	<methodcall>
-		<requestid>%d</requestid>
-		<methodname>connect</methodname>
-		<username>a</username>
-		<password>a</password>
-		<cameraid>%s</cameraid>
-		<alwaysstdjpeg>yes</alwaysstdjpeg>		
-		<connectparam>id=%s&amp;connectiontoken=%s</connectparam>
-	</methodcall>`, requestId, cameraId, cameraId, token)
+	message := fmt.Sprintf("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+
+		"<methodcall>"+
+		"<requestid>%d</requestid>"+
+		"<methodname>connect</methodname>"+
+		"<username>a</username>"+
+		"<password>a</password>"+
+		"<cameraid>%s</cameraid>"+
+		"<alwaysstdjpeg>yes</alwaysstdjpeg>"+
+		"<connectparam>id=%s&amp;connectiontoken=%s</connectparam>"+
+		"</methodcall>", requestId, cameraId, cameraId, token)
 
 	return append([]byte(message), END...)
 }
 
 func FormatLive(requestId int, quality int) []byte {
-	message := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
-	<methodcall><requestid>%d</requestid>
-	<methodname>live</methodname>
-	<compressionrate>%d</compressionrate>
-	</methodcall>`, requestId, quality)
+	message := fmt.Sprintf("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+
+		"<methodcall><requestid>%d</requestid>"+
+		"<methodname>live</methodname>"+
+		"<compressionrate>%d</compressionrate>"+
+		"</methodcall>", requestId, quality)
 	return append([]byte(message), END...)
 }
 
 func FormatConnectUpdate(requestId int, cameraId string, token string) []byte {
-	message := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
-			<methodcall><requestid>%d</requestid>
-			<methodname>connectupdate</methodname>
-			<connectparam>id=%d&amp;connectiontoken=%s</connectparam>
-			</methodcall>`, requestId, cameraId, token)
+	message := fmt.Sprintf("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+
+		"<methodcall><requestid>%d</requestid>"+
+		"<methodname>connectupdate</methodname>"+
+		"<connectparam>id=%d&amp;connectiontoken=%s</connectparam>"+
+		"</methodcall>", requestId, cameraId, token)
 	return append([]byte(message), END...)
 }
 
 func FormatStop(requestId int) []byte {
-	message := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?>
-			<methodcall><requestid>%d</requestid>
-			<methodname>stop</methodname>
-			</methodcall>`, requestId)
+	message := fmt.Sprintf("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+
+		"<methodcall><requestid>%d</requestid>"+
+		"<methodname>stop</methodname>"+
+		"</methodcall>", requestId)
 	return append([]byte(message), END...)
 }
 
@@ -491,7 +491,7 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 	var requestId = 0
 
 	sendBuffer := FormatConnect(requestId, cameraId, _currentToken.Token)
-	_, err = conn.Write(sendBuffer)
+	nBytes, err := conn.Write(sendBuffer)
 	if err != nil {
 		klog.Errorf("Write connect message to socket error: %v\n", err)
 		chanResult <- &StreamResult{
@@ -501,6 +501,7 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 		}
 		return
 	}
+	klog.Infof("Write %d bytes connect message to socket\n", nBytes)
 
 	bytesReceived := make([]byte, maxBuf)
 	bytes, err := RecvUntil(conn, bytesReceived, 0, maxBuf)
@@ -530,7 +531,7 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 	requestId++
 	quality := 75
 	sendBuffer = FormatLive(requestId, quality)
-	nBytes, err := conn.Write(sendBuffer)
+	nBytes, err = conn.Write(sendBuffer)
 	if err != nil {
 		klog.Errorf("Write start live message to socket error: %v\n", err)
 		chanResult <- &StreamResult{
