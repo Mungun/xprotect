@@ -25,17 +25,20 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	// defer cancel()
-	chanTokenResult := make(chan *oauth2.Token, 1)
+	chanBearerTokenResult := make(chan *oauth2.Token, 1)
+	chanCorpTokenResult := make(chan *conf.TokenResult, 1)
+
 	chanReaderCommand := make(chan *reader.StreamCommand, 1)
 	chanReaderResult := make(chan *reader.StreamResult, 1)
-	chanWebserverToken := make(chan *oauth2.Token, 1)
 
+	chanWebserverBearerToken := make(chan *oauth2.Token, 1)
+	chanWebserverCorpToken := make(chan *conf.TokenResult, 1)
 	// Start oauth service
-	authHandler := auth.NewAuthHandler(config)
-	go authHandler.SyncToken(ctx, chanTokenResult, true)
+	authHandler := auth.NewAuthHandler(config, chanBearerTokenResult, chanCorpTokenResult)
+	go authHandler.Start(ctx)
 
 	// Start web server
-	server := web.NewWebserver(chanWebserverToken, chanReaderCommand, config)
+	server := web.NewWebserver(chanWebserverBearerToken, chanWebserverCorpToken, chanReaderCommand, config)
 	stop, err := server.Start(ctx)
 	if err != nil {
 		klog.Errorf("server start err %v\n", err)
@@ -47,16 +50,18 @@ func main() {
 	go readerHandler.Start(ctx, chanReaderCommand, chanReaderResult)
 
 	// process
-	go func(_ctx context.Context, _chanToken chan *oauth2.Token, _chanReaderResult chan *reader.StreamResult, imageData chan []byte) {
+	go func(_ctx context.Context, _chanToken chan *oauth2.Token, _chanCorpToken chan *conf.TokenResult, _chanReaderResult chan *reader.StreamResult, imageData chan []byte) {
 		for {
 			select {
 			case <-_ctx.Done():
 				return
 			case _t := <-_chanToken: // token updated
-				chanWebserverToken <- _t
+				chanWebserverBearerToken <- _t
+			case _t := <-_chanCorpToken:
+				chanWebserverCorpToken <- _t
 				chanReaderCommand <- &reader.StreamCommand{
-					Type:  reader.COMMAND_TOKEN_UPDATE,
-					Token: _t,
+					Type:      reader.COMMAND_TOKEN_UPDATE,
+					CorpToken: _t,
 				}
 			case _res := <-_chanReaderResult:
 				if _res.Type == reader.RESULT_ERROR {
@@ -68,7 +73,7 @@ func main() {
 				}
 			}
 		}
-	}(ctx, chanTokenResult, chanReaderResult, server.ChanImageData)
+	}(ctx, chanBearerTokenResult, chanCorpTokenResult, chanReaderResult, server.ChanImageData)
 
 	sig := <-termChan // Blocks here until interrupted
 	klog.Infoln("********************************* Shutdown signal received *********************************")

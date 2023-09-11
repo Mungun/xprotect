@@ -25,8 +25,11 @@ type webserver struct {
 	mu   sync.RWMutex
 	clients []*SSEClient
 	// stopChan  chan struct{}
-	chanToken chan *oauth2.Token
-	token     *oauth2.Token // used for command
+	chanBearerToken chan *oauth2.Token
+	bearerToken     *oauth2.Token // used for command
+
+	chanCorpToken chan *conf.TokenResult
+	corpToken     *conf.TokenResult // used for command
 
 	recorders []util.Recorder
 	cameras   []util.Camera
@@ -37,11 +40,12 @@ type webserver struct {
 
 }
 
-func NewWebserver(chanToken chan *oauth2.Token, chanReaderCommand chan *reader.StreamCommand, config *conf.Config ) *webserver {
+func NewWebserver(chanBearerToken chan *oauth2.Token, chanCorpToken chan *conf.TokenResult, chanReaderCommand chan *reader.StreamCommand, config *conf.Config ) *webserver {
 	return &webserver{
 		config: config,
 		clients:   make([]*SSEClient, 0),
-		chanToken: chanToken,
+		chanBearerToken: chanBearerToken,
+		chanCorpToken: chanCorpToken,
 		chanReaderCommand: chanReaderCommand,
 		ChanImageData: make(chan []byte, 1024),
 	}
@@ -246,7 +250,7 @@ func (p *webserver) cameraLive(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	token := p.getToken()
+	token := p.getCorpToken()
 	if token == nil {
 		klog.Errorf("token is null\n")
 		sendErrorAsJson(w, fmt.Errorf("Not connected management server!"))
@@ -256,7 +260,7 @@ func (p *webserver) cameraLive(w http.ResponseWriter, req *http.Request) {
 	p.chanReaderCommand <- &reader.StreamCommand{
 		Type:     reader.COMMAND_START_LIVE,
 		CameraId: body.CameraId,
-		Token:    token,
+		CorpToken:    token,
 		ServerUrl: body.ServerUrl,
 	}
 
@@ -386,16 +390,28 @@ func (p *webserver) listCamera(token *oauth2.Token) {
 	p.setCameras(cameras)
 }
 
-func (p *webserver) getToken() *oauth2.Token {
+func (p *webserver) getBearerToken() *oauth2.Token {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
-	return p.token
+	return p.bearerToken
 }
 
-func (p *webserver) setToken(token *oauth2.Token) {
+func (p *webserver) setBearerToken(bearerToken *oauth2.Token) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	p.token = token
+	p.bearerToken = bearerToken
+}
+
+func (p *webserver) getCorpToken() *conf.TokenResult {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.corpToken
+}
+
+func (p *webserver) setCorpToken(corpToken *conf.TokenResult) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.corpToken = corpToken
 }
 
 func (p *webserver) updateToken(ctx context.Context) {
@@ -404,11 +420,14 @@ func (p *webserver) updateToken(ctx context.Context) {
 		case <-ctx.Done():
 			klog.Infof("updateToken receive stop signal\n")
 			return
-		case _t := <-p.chanToken:
-			klog.Infof("updateToken receive token: %v\n", _t)
-			p.setToken(_t)
+		case _t := <-p.chanBearerToken:
+			klog.Infof("updateToken receive bearerToken: %v\n", _t)
+			p.setBearerToken(_t)
 			go p.listRecorder(_t)
 			go p.listCamera(_t)
+		case _t := <-p.chanCorpToken:
+			klog.Infof("updateToken receive corpToken: %v\n", _t)
+			p.setCorpToken(_t)
 		}
 	}
 }

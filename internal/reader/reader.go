@@ -11,8 +11,9 @@ import (
 	"strings"
 	"sync"
 
-	"golang.org/x/oauth2"
 	"k8s.io/klog/v2"
+
+	conf "github.com/mungun/xprotect/internal/config"
 )
 
 const (
@@ -27,7 +28,7 @@ var END = []byte{13, 10, 13, 10}
 
 type StreamCommand struct {
 	Type      string
-	Token     *oauth2.Token
+	CorpToken *conf.TokenResult
 	ServerUrl string
 	CameraId  string
 }
@@ -51,7 +52,7 @@ type ImageInfo struct {
 }
 
 type ReaderHandler struct {
-	Token      *oauth2.Token
+	CorpToken  *conf.TokenResult
 	Live       bool
 	cancelFunc context.CancelFunc
 }
@@ -67,7 +68,7 @@ func (s *ReaderHandler) Start(ctx context.Context, chanCommand chan *StreamComma
 
 	wg := &sync.WaitGroup{}
 
-	chanToken := make(chan *oauth2.Token, 1)
+	chanCorpToken := make(chan *conf.TokenResult, 1)
 	procOutChannel := make(chan *StreamResult, 1)
 	for {
 		select {
@@ -81,9 +82,9 @@ func (s *ReaderHandler) Start(ctx context.Context, chanCommand chan *StreamComma
 		case cmd := <-chanCommand:
 			klog.Infof("cmd from chanCommand %v\n", cmd)
 			if cmd.Type == COMMAND_TOKEN_UPDATE {
-				s.Token = cmd.Token
+				s.CorpToken = cmd.CorpToken
 				if s.Live {
-					chanToken <- cmd.Token
+					chanCorpToken <- cmd.CorpToken
 				}
 
 			} else if cmd.Type == COMMAND_START_LIVE {
@@ -93,11 +94,11 @@ func (s *ReaderHandler) Start(ctx context.Context, chanCommand chan *StreamComma
 						Message: "Has active stream!",
 					}
 				} else {
-					s.Token = cmd.Token // set token if null
+					s.CorpToken = cmd.CorpToken // set token if null
 					ctx, cancelFunc := context.WithCancel(context.Background())
 					s.cancelFunc = cancelFunc
 					wg.Add(1)
-					go processStream(ctx, wg, cmd, chanToken, procOutChannel)
+					go processStream(ctx, wg, cmd, chanCorpToken, procOutChannel)
 				}
 			} else if cmd.Type == COMMAND_STOP_LIVE {
 				if s.cancelFunc != nil {
@@ -439,11 +440,11 @@ func processImage(conn net.Conn, bytesReceived []byte, maxBuf int) (*ImageInfo, 
 	return nil, fmt.Errorf("other message")
 }
 
-func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, chanToken chan *oauth2.Token, chanResult chan *StreamResult) {
+func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, chanCorpToken chan *conf.TokenResult, chanResult chan *StreamResult) {
 
 	defer wg.Done()
 
-	_currentToken := cmd.Token
+	_currentToken := cmd.CorpToken
 	cameraId := cmd.CameraId
 
 	maxBuf := 1024 * 8
@@ -489,7 +490,7 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 
 	var requestId = 0
 
-	sendBuffer := FormatConnect(requestId, cameraId, _currentToken.AccessToken)
+	sendBuffer := FormatConnect(requestId, cameraId, _currentToken.Token)
 	_, err = conn.Write(sendBuffer)
 	if err != nil {
 		klog.Errorf("Write connect message to socket error: %v\n", err)
@@ -529,9 +530,9 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 	requestId++
 	quality := 75
 	sendBuffer = FormatLive(requestId, quality)
-	_, err = conn.Write(sendBuffer)
+	nBytes, err := conn.Write(sendBuffer)
 	if err != nil {
-		klog.Errorf("Write stare live message to socket error: %v\n", err)
+		klog.Errorf("Write start live message to socket error: %v\n", err)
 		chanResult <- &StreamResult{
 			Type:    RESULT_ERROR,
 			Message: fmt.Sprintf("Write stare live message to socket error: %v\n", err),
@@ -539,6 +540,7 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 		}
 		return
 	}
+	klog.Infof("Write %d bytes start live message to socket\n", nBytes)
 
 	for {
 
@@ -549,20 +551,21 @@ func processStream(ctx context.Context, wg *sync.WaitGroup, cmd *StreamCommand, 
 			sendBuffer = FormatStop(requestId)
 			conn.Write(sendBuffer)
 			return
-		case _t := <-chanToken:
-			fmt.Printf("Token updated :%+v\n", _t.Expiry)
+		case _t := <-chanCorpToken:
+			fmt.Printf("Token updated, will expire :%+v\n", _t.Expiry)
 			_currentToken = _t
 			requestId++
-			sendBuffer = FormatConnectUpdate(requestId, cameraId, _currentToken.AccessToken)
-			_, err = conn.Write(sendBuffer)
+			sendBuffer = FormatConnectUpdate(requestId, cameraId, _currentToken.Token)
+			nBytes, err := conn.Write(sendBuffer)
 			if err != nil {
 				klog.Errorf("Write token update message to socket error: %v\n", err)
 				chanResult <- &StreamResult{
 					Type:    RESULT_ERROR,
 					Message: fmt.Sprintf("Write token update message to socket error: %v\n", err),
 				}
-
 			}
+
+			klog.Infof("Write %d bytes token update message to socket\n", nBytes)
 		default:
 			image, err := processImage(conn, bytesReceived, maxBuf)
 			if err != nil {

@@ -1,7 +1,9 @@
 package config
 
 import (
+	"encoding/xml"
 	"flag"
+	"time"
 )
 
 type Config struct {
@@ -26,4 +28,11 @@ func InitConfig() *Config {
 	// Const = &config
 
 	return &config
+}
+
+type TokenResult struct {
+	XMLName    xml.Name `xml:"Envelope"`
+	Token      string   `xml:"Body>LoginResponse>LoginResult>Token"`
+	TimeToLive int      `xml:"Body>LoginResponse>LoginResult>TimeToLive>MicroSeconds"`
+	Expiry     time.Time
 }

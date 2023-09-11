@@ -7,6 +7,12 @@ import (
 	"io"
 	"k8s.io/klog/v2"
 	"crypto/tls"
+	"bytes"
+	"encoding/xml"
+	"time"
+	"github.com/google/uuid"
+
+	conf "github.com/mungun/xprotect/internal/config"
 )
 
 type Recorder struct {
@@ -146,4 +152,130 @@ func ListRecorder(baseUrl string, token string) ([]Recorder, error) {
 
 	return list, nil
 
+}
+
+func FormatLoginXml(instanceId string, currentToken string) []byte {
+	message := fmt.Sprintf("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+
+	"<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">"+
+	"<s:Body>"+
+	"<Login xmlns=\"http://videoos.net/2/XProtectCSServerCommand\">"+
+	"<instanceId>%s</instanceId>"+
+	"<currentToken>%s</currentToken>"+
+	"</Login>"+
+	"</s:Body>"+
+	"</s:Envelope>", instanceId, currentToken)
+
+	return []byte(message)
+} 
+
+func FetchCorpToken(baseUrl string, bearerToken string, currentToken string, instanceId string) (*conf.TokenResult, error) {
+	URL, err := url.JoinPath(baseUrl, "/managementServer/ServerCommandService.svc")
+	if err != nil {
+		klog.Errorf("FetchCorpToken JoinPath error :%v\n", err)
+		return nil, fmt.Errorf("invalid base url %s", baseUrl)
+	}
+
+	data := FormatLoginXml(instanceId, currentToken)
+	req, err := http.NewRequest(http.MethodPost, URL, bytes.NewReader(data))
+	if err != nil {
+		klog.Errorf("FetchCorpToken NewRequest error :%v\n", err)
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "text/xml; charset=utf-8")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
+	req.Header.Set("SOAPAction", "http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/Login");
+	client := GetHttClient()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		klog.Errorf("FetchCorpToken send request error :%v\n", err)
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		klog.Errorf("FetchCorpToken ReadAll error :%v\n", err)
+		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		klog.Errorf("FetchCorpToken resp code :%v\n", resp.StatusCode)
+		return nil, fmt.Errorf("fetchCorpToken error response :%v", string(body))
+	}
+
+	klog.Infof("FetchCorpToken result %s\n", string(body))
+	var result conf.TokenResult
+	if err := xml.Unmarshal(body, &result); err != nil {
+		klog.Errorf("FetchCorpToken result Unmarshal error :%v\n", err)
+		return nil, err
+	}
+
+	// set Expire Time
+	result.Expiry = time.Now().Add(time.Duration(result.TimeToLive)*time.Millisecond)
+
+	return &result, nil
+}
+
+func FormatRegisterXml(instanceId string, currentToken string) []byte {
+	integrationId := uuid.New().String()
+	message := fmt.Sprintf("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+
+	"<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">"+
+	"<s:Body>"+
+	"<RegisterIntegration xmlns=\"http://videoos.net/2/XProtectCSServerCommand\">"+
+	"<token>%s</token>"+
+	"<instanceId>%s</instanceId>"+
+	"<integrationId>%s</integrationId>"+
+	"<integrationVersion>1.0</integrationVersion>"+
+	"<integrationName>ot-video-analyzer</integrationName>"+
+	"<manufacturerName>andorean</manufacturerName>"+
+	"</RegisterIntegration>"+
+	"</s:Body>"+
+	"</s:Envelope>", currentToken, instanceId, integrationId)
+
+	return []byte(message)
+}
+
+func RegisterIntegration(baseUrl string, bearerToken string, token string, instanceId string) (error) {
+	URL, err := url.JoinPath(baseUrl, "/managementServer/ServerCommandService.svc")
+	if err != nil {
+		klog.Errorf("RegisterIntegration JoinPath error :%v\n", err)
+		return fmt.Errorf("invalid base url %s", baseUrl)
+	}
+
+	data := FormatRegisterXml(instanceId, token)
+	req, err := http.NewRequest(http.MethodPost, URL, bytes.NewReader(data))
+	if err != nil {
+		klog.Errorf("registerIntegration NewRequest error :%v\n", err)
+		return err
+	}
+
+	req.Header.Set("Content-Type", "text/xml; charset=utf-8")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
+	req.Header.Set("SOAPAction", "http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/RegisterIntegration");
+	client := GetHttClient()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		klog.Errorf("registerIntegration send request error :%v\n", err)
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		klog.Errorf("RegisterIntegration ReadAll error :%v\n", err)
+		return err
+	}
+
+	if resp.StatusCode != 200 {
+		klog.Errorf("RegisterIntegration resp code :%v\n", resp.StatusCode)
+		return fmt.Errorf("registerIntegration error response :%v", string(body))
+	}
+
+	klog.Infof("RegisterIntegration result %s\n", string(body))
+	return nil
 }

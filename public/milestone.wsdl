@@ -1,0 +1,567 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:i1="urn:videoos:management:server:servercommandservice" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:i0="http://videoos.net/2/XProtectCSServerCommand" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" name="ServerCommandService" targetNamespace="http://tempuri.org/">
+<wsp:Policy wsu:Id="BasicHttpBinding_IServerCommandService_policy">
+</wsp:Policy>
+<wsdl:import namespace="http://videoos.net/2/XProtectCSServerCommand" location="https://10.93.1.69/ManagementServer/ServerCommandService.svc?wsdl=wsdl0"/>
+<wsdl:import namespace="urn:videoos:management:server:servercommandservice" location="https://10.93.1.69/ManagementServer/ServerCommandService.svc?wsdl=wsdl1"/>
+<wsdl:types/>
+<wsdl:binding name="BasicHttpBinding_IServerCommandService" type="i0:IServerCommandService">
+<wsp:PolicyReference URI="#BasicHttpBinding_IServerCommandService_policy"/>
+<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+<wsdl:operation name="GetVersion">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetVersion" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetServerVersion">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetServerVersion" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetProductInfo">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetProductInfo" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetSystemLicenseInfo">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetSystemLicenseInfo" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetSmartClientVersion">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetSmartClientVersion" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="CheckSmartClientVersion">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/CheckSmartClientVersion" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="IsOnline">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/IsOnline" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="Login">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/Login" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="Logout">
+</wsdl:operation>
+<wsdl:operation name="Authorize">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/Authorize" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetUserInfo">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetUserInfo" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetConfiguration">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetConfiguration" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetConfigurationRecorders">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetConfigurationRecorders" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetConfigurationHardware">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetConfigurationHardware" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetDevicesDisabled">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetDevicesDisabled" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetVmoServicesList">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetVmoServicesList" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetViewGroups">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetViewGroups" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetViewGroupData">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetViewGroupData" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="SetViewGroupData">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/SetViewGroupData" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetCustomSettingDataGlobal">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetCustomSettingDataGlobal" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetCustomSettingDataUser">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetCustomSettingDataUser" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="SetCustomSettingDataGlobal">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/SetCustomSettingDataGlobal" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="SetCustomSettingDataUser">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/SetCustomSettingDataUser" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetCustomSettingDataGlobal2">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetCustomSettingDataGlobal2" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetCustomSettingDataUser2">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetCustomSettingDataUser2" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="SetCustomSettingDataGlobal2">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/SetCustomSettingDataGlobal2" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="SetCustomSettingDataUser2">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/SetCustomSettingDataUser2" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="EventTrigger">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/EventTrigger" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="EventTriggerWithMetadata">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/EventTriggerWithMetadata" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="AlertsGetAroundWithSpan">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/AlertsGetAroundWithSpan" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="MatrixMonitorActivateCamera">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/MatrixMonitorActivateCamera" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="QueryChanges">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/QueryChanges" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="QueryRecorderInfo">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/QueryRecorderInfo" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkGetNewReference">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkGetNewReference" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkCreate">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkCreate" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkUpdate">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkUpdate" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkDelete">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkDelete" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkGet">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkGet" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkSearchTime">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkSearchTime" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkSearchTime2">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkSearchTime2" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkSearchFromBookmark">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkSearchFromBookmark" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="BookmarkSearchFromBookmark2">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/BookmarkSearchFromBookmark2" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="RegisterIntegration">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/RegisterIntegration" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="RegisterPluginIntegrations">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/RegisterPluginIntegrations" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="MarkedDataGetNewReference">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/MarkedDataGetNewReference" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="MarkedDataCreate">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/MarkedDataCreate" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="MarkedDataUpdate">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/MarkedDataUpdate" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="MarkedDataDelete">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/MarkedDataDelete" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="MarkedDataGet">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/MarkedDataGet" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="MarkedDataSearch">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/MarkedDataSearch" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="MarkedDataSearch2">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/MarkedDataSearch2" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetClientProfile">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetClientProfile" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetClientProfile2">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetClientProfile2" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetClientProfile3">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetClientProfile3" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="GetPresets">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/GetPresets" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="DeletePreset">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/DeletePreset" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="UpdatePresetName">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/UpdatePresetName" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="UpdatePresetPosition">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/UpdatePresetPosition" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="CreatePreset">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/CreatePreset" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="OrderPresets">
+<soap:operation soapAction="http://videoos.net/2/XProtectCSServerCommand/IServerCommandService/OrderPresets" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+</wsdl:binding>
+<wsdl:service name="ServerCommandService">
+<wsdl:port name="BasicHttpBinding_IServerCommandService" binding="tns:BasicHttpBinding_IServerCommandService">
+<soap:address location="https://10.93.1.69/ManagementServer/ServerCommandService.svc"/>
+</wsdl:port>
+<wsdl:port name="WSHttpBinding_IServerCommandService" binding="i1:WSHttpBinding_IServerCommandService">
+<soap12:address location="http://mnoytcctvd3.corp.riotinto.org/ManagementServer/ServerCommandService.svc"/>
+<wsa10:EndpointReference>
+<wsa10:Address>http://mnoytcctvd3.corp.riotinto.org/ManagementServer/ServerCommandService.svc</wsa10:Address>
+<Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+<Spn>host/MNOYTCCTVD3.corp.riotinto.org</Spn>
+</Identity>
+</wsa10:EndpointReference>
+</wsdl:port>
+<wsdl:port name="WSHttpBinding_IServerCommandService1" binding="i1:WSHttpBinding_IServerCommandService">
+<soap12:address location="urn:videoos:management:server:servercommandservice"/>
+<wsa10:EndpointReference>
+<wsa10:Address>urn:videoos:management:server:servercommandservice</wsa10:Address>
+<Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+<Spn>host/MNOYTCCTVD3.corp.riotinto.org</Spn>
+</Identity>
+</wsa10:EndpointReference>
+</wsdl:port>
+</wsdl:service>
+</wsdl:definitions>
